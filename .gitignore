@@ -1,0 +1,5 @@
+mainwindow.py
+**.pro
+**.pro.user
+.idea
+__pycache__
