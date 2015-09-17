@@ -70,6 +70,22 @@
       </item>
      </layout>
     </item>
+    <item>
+     <widget class="QTableWidget" name="doc_table_widget">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SingleSelection</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">

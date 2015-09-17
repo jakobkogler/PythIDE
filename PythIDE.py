@@ -1,5 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+from PyQt5 import QtCore
 from mainwindow import Ui_MainWindow
 import subprocess
 
@@ -12,6 +13,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.action_run.triggered.connect(lambda: self.run_program(debug_on=False))
         self.action_debug.triggered.connect(lambda: self.run_program(debug_on=True))
 
+        self.fill_doc_table()
         self.output_box.hide()
 
     def run_program(self, debug_on):
@@ -31,6 +33,41 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         if not errors:
             self.output_text_edit.setPlainText(output.decode())
             self.output_box.show()
+
+    def fill_doc_table(self):
+        with open('pyth/web-docs.txt', 'r') as f:
+            docs = [line.split(' ', maxsplit=4) for line in f]
+
+        self.doc_table_widget.setColumnCount(5)
+        self.doc_table_widget.setRowCount(len(docs))
+
+        header = ['Char', 'Arity', 'Starts', 'Mnemonic', 'Details']
+        self.doc_table_widget.setHorizontalHeaderLabels(header)
+        for row, items in enumerate(docs):
+            for column, item in enumerate(items):
+                if len(item) > 40:
+                    item = self.split_sentence(item, 40)
+                    print(item)
+                table_widget_item = QTableWidgetItem(item)
+                if column < 4:
+                    table_widget_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.doc_table_widget.setItem(row, column, table_widget_item)
+
+        self.doc_table_widget.resizeColumnsToContents()
+        for i in range(10):
+            self.doc_table_widget.resizeRowToContents(i)
+
+    @staticmethod
+    def split_sentence(sentence, length):
+        lines = [[]]
+        for word in sentence.split(' '):
+            if len(' '.join(lines[-1] + [word])) > length:
+                lines.append([word])
+            else:
+                lines[-1].append(word)
+
+        lines = [' '.join(line) for line in lines]
+        return '\n'.join(lines)
 
 
 if __name__ == '__main__':
