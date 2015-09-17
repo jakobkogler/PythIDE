@@ -90,6 +90,7 @@
     <bool>true</bool>
    </attribute>
    <addaction name="action_run"/>
+   <addaction name="action_debug"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_run">
@@ -97,10 +98,21 @@
     <string>Run</string>
    </property>
    <property name="toolTip">
-    <string>Run program. </string>
+    <string>Ctrl+Return</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Return</string>
+   </property>
+  </action>
+  <action name="action_debug">
+   <property name="text">
+    <string>Debug</string>
+   </property>
+   <property name="toolTip">
+    <string>Ctrl+Shift+Return</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Return</string>
    </property>
   </action>
  </widget>

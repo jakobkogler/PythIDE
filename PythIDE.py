@@ -9,14 +9,14 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         QMainWindow.__init__(self)
         self.setupUi(self)
 
-        self.action_run.triggered.connect(self.run_program)
+        self.action_run.triggered.connect(lambda: self.run_program(debug_on=False))
+        self.action_debug.triggered.connect(lambda: self.run_program(debug_on=True))
 
         self.output_box.hide()
 
-    def run_program(self):
+    def run_program(self, debug_on):
         code = self.code_text_edit.toPlainText()
         input_data = self.input_text_edit.toPlainText()
-        debug_on = False
 
         input_data += '\n'
         code = '\n'.join(code.split('\r\n'))
