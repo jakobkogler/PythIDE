@@ -32,10 +32,23 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
 
     def run_program(self, debug_on):
         code = self.code_text_edit.toPlainText()
-        input_data = self.input_text_edit.toPlainText()
-
-        input_data += '\n'
         code = '\n'.join(code.split('\r\n'))
+
+        if self.tabWidget.currentIndex() == 0:
+            input_data = self.input_text_edit.toPlainText() + '\n'
+            message = self.run_code(code, input_data, debug_on)
+        else:
+            input_data = self.test_suite_text_edit.toPlainText().split('\n')
+            input_length = self.test_suite_spinbox.value()
+            input_data = ['\n'.join(input_data[i:i+input_length]) for i in range(0, len(input_data), input_length)]
+
+            messages = [self.run_code(code, input_data[0], debug_on)] + \
+                [self.run_code(code, input_data, False) for input_data in input_data[1:]]
+            message = '\n'.join(messages)
+
+        self.output_text_edit.setPlainText(message)
+
+    def run_code(self, code, input_data, debug_on):
         pyth_process = subprocess.Popen(['/usr/bin/env', 'python3', 'pyth/pyth.py',
                                          '-cd' if debug_on else '-c', code],
                                         stdin=subprocess.PIPE,
@@ -43,9 +56,8 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
                                         stderr=subprocess.STDOUT)
 
         output, errors = pyth_process.communicate(input=bytearray(input_data, 'utf-8'))
-
         message = output.decode() + (errors if errors else '')
-        self.output_text_edit.setPlainText(message)
+        return message
 
     @staticmethod
     def get_docs():
