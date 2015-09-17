@@ -3,13 +3,12 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from mainwindow import Ui_MainWindow
 
 
-class IdeMainWindow(QMainWindow):
+class IdeMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
+        self.setupUi(self)
 
-        # Set up the user interface from Designer.
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        self.output_box.hide()
 
 
 if __name__ == '__main__':
