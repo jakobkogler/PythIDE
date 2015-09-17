@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 from PyQt5 import QtCore
 from mainwindow import Ui_MainWindow
 import subprocess
@@ -20,11 +20,11 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         center_height = (desktop.height() - self.height())//2
         self.move(center_width, center_height)
 
+        self.fill_doc_table()
+
         self.action_run.triggered.connect(lambda: self.run_program(debug_on=False))
         self.action_debug.triggered.connect(lambda: self.run_program(debug_on=True))
-
-        self.fill_doc_table()
-        self.output_box.hide()
+        self.action_find.triggered.connect(self.find_line_edit.setFocus)
 
     def run_program(self, debug_on):
         code = self.code_text_edit.toPlainText()
@@ -40,9 +40,8 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
 
         output, errors = pyth_process.communicate(input=bytearray(input_data, 'utf-8'))
 
-        if not errors:
-            self.output_text_edit.setPlainText(output.decode())
-            self.output_box.show()
+        message = output.decode() + (errors if errors else '')
+        self.output_text_edit.setPlainText(message)
 
     def fill_doc_table(self):
         with open('pyth/web-docs.txt', 'r') as f:

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>677</width>
-    <height>540</height>
+    <width>1150</width>
+    <height>632</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -71,19 +71,41 @@
      </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="doc_table_widget">
-      <property name="editTriggers">
-       <set>QAbstractItemView::NoEditTriggers</set>
+     <widget class="QGroupBox" name="doc_box">
+      <property name="title">
+       <string>Pyth Character Reference</string>
       </property>
-      <property name="selectionMode">
-       <enum>QAbstractItemView::SingleSelection</enum>
-      </property>
-      <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
-      </property>
-      <attribute name="verticalHeaderVisible">
-       <bool>false</bool>
-      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLineEdit" name="find_line_edit">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="placeholderText">
+          <string>Find</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="doc_table_widget">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -93,7 +115,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>677</width>
+     <width>1150</width>
      <height>27</height>
     </rect>
    </property>
@@ -107,6 +129,7 @@
    </attribute>
    <addaction name="action_run"/>
    <addaction name="action_debug"/>
+   <addaction name="action_find"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_run">
@@ -129,6 +152,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Return</string>
+   </property>
+  </action>
+  <action name="action_find">
+   <property name="text">
+    <string>Find</string>
+   </property>
+   <property name="toolTip">
+    <string>Ctrl+F</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
  </widget>
