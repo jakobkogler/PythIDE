@@ -1,0 +1,3 @@
+[submodule "pyth"]
+	path = pyth
+	url = https://github.com/isaacg1/pyth.git
