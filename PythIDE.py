@@ -21,7 +21,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         input_data += '\n'
         code = '\n'.join(code.split('\r\n'))
         pyth_process = subprocess.Popen(['/usr/bin/env', 'python3', 'pyth/pyth.py',
-                                         '-csd' if debug_on else '-cs', code],
+                                         '-cd' if debug_on else '-c', code],
                                         stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.STDOUT)
