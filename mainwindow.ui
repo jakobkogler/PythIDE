@@ -130,6 +130,7 @@
    <addaction name="action_run"/>
    <addaction name="action_debug"/>
    <addaction name="action_find"/>
+   <addaction name="action_about"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_run">
@@ -163,6 +164,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="action_about">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

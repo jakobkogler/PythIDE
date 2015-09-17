@@ -4,3 +4,4 @@ mainwindow.py
 .idea
 __pycache__
 **.ini
+version.txt

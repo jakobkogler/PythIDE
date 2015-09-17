@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox
 from PyQt5 import QtCore
 from mainwindow import Ui_MainWindow
 import subprocess
@@ -27,6 +27,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.action_run.triggered.connect(lambda: self.run_program(debug_on=False))
         self.action_debug.triggered.connect(lambda: self.run_program(debug_on=True))
         self.action_find.triggered.connect(self.find_line_edit.setFocus)
+        self.action_about.triggered.connect(self.show_about)
         self.find_line_edit.textChanged.connect(self.fill_doc_table)
 
     def run_program(self, debug_on):
@@ -46,7 +47,8 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         message = output.decode() + (errors if errors else '')
         self.output_text_edit.setPlainText(message)
 
-    def get_docs(self):
+    @staticmethod
+    def get_docs():
         with open('pyth/web-docs.txt', 'r') as f:
             return [line.split(' ', maxsplit=4) for line in f]
 
@@ -94,6 +96,18 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.settings.setValue('WindowSettings/Width', self.width())
         self.settings.setValue('WindowSettings/Height', self.height())
         event.accept()
+
+    def show_about(self):
+        try:
+            with open('version.txt', 'r') as f:
+                version = f.read().strip()
+                version_msg = "Version {}, commit {}".format(version.split('-')[0][1:],
+                                                             version.split('-')[2][1:])
+        except FileNotFoundError:
+            version_msg = 'Version unknown'
+
+        QMessageBox.about(self, 'About PythIDE',
+                          '\n'.join([version_msg, "Copyright (C) 2015 Jakob Kogler, MIT License"]))
 
 
 if __name__ == '__main__':
