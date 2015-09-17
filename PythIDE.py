@@ -20,11 +20,14 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         center_height = (desktop.height() - self.height())//2
         self.move(center_width, center_height)
 
+        self.doc_items = self.get_docs()
         self.fill_doc_table()
+        self.doc_table_widget.resizeColumnsToContents()
 
         self.action_run.triggered.connect(lambda: self.run_program(debug_on=False))
         self.action_debug.triggered.connect(lambda: self.run_program(debug_on=True))
         self.action_find.triggered.connect(self.find_line_edit.setFocus)
+        self.find_line_edit.textChanged.connect(self.fill_doc_table)
 
     def run_program(self, debug_on):
         code = self.code_text_edit.toPlainText()
@@ -43,16 +46,27 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         message = output.decode() + (errors if errors else '')
         self.output_text_edit.setPlainText(message)
 
-    def fill_doc_table(self):
+    def get_docs(self):
         with open('pyth/web-docs.txt', 'r') as f:
-            docs = [line.split(' ', maxsplit=4) for line in f]
+            return [line.split(' ', maxsplit=4) for line in f]
 
+    def fill_doc_table(self):
+        self.doc_table_widget.setRowCount(0)
         self.doc_table_widget.setColumnCount(5)
-        self.doc_table_widget.setRowCount(len(docs))
-
         header = ['Char', 'Arity', 'Starts', 'Mnemonic', 'Details']
         self.doc_table_widget.setHorizontalHeaderLabels(header)
-        for row, items in enumerate(docs):
+
+        filter_text = self.find_line_edit.text()
+        if not filter_text:
+            filtered = self.doc_items
+        if len(filter_text) == 1 or (len(filter_text) == 2 and filter_text[0] == '.'):
+            filtered = [line for line in self.doc_items if line[0].lower() == filter_text.lower()]
+        else:
+            filtered = [line for line in self.doc_items if any(filter_text.lower() in item.lower() for item in line)]
+
+        self.doc_table_widget.setRowCount(len(filtered))
+
+        for row, items in enumerate(filtered):
             for column, item in enumerate(items):
                 if len(item) > 40:
                     item = self.split_sentence(item, 40)
@@ -61,9 +75,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
                     table_widget_item.setTextAlignment(QtCore.Qt.AlignCenter)
                 self.doc_table_widget.setItem(row, column, table_widget_item)
 
-        self.doc_table_widget.resizeColumnsToContents()
-        for i in range(10):
-            self.doc_table_widget.resizeRowToContents(i)
+        self.doc_table_widget.resizeRowsToContents()
 
     @staticmethod
     def split_sentence(sentence, length):
