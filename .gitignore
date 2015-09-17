@@ -3,3 +3,4 @@ mainwindow.py
 **.pro.user
 .idea
 __pycache__
+**.ini
