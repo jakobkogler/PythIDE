@@ -11,11 +11,10 @@ An IDE for the golfing language [Pyth](https://github.com/isaacg1/pyth)
 
 ## Usage ##
 
-First compile `mainwindow.ui` with the script
-```
-ui2py.sh
-```
-and start the program with 
+Before the first start, you have to run the script `prebuild.sh`.
+It compiles `mainwindow.ui` to Python and determines the version number via Git.
+Afterwards you can start the the program with
+
 ```
 python3 PythIDE.py
 ```
