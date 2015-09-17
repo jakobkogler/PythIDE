@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QDesktopWidget
 from PyQt5 import QtCore
 from mainwindow import Ui_MainWindow
 import subprocess
@@ -9,6 +9,16 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setupUi(self)
+
+        self.settings = QtCore.QSettings('ide_settings.ini', QtCore.QSettings.IniFormat)
+        width = int(self.settings.value('WindowSettings/Width', '0'))
+        height = int(self.settings.value('WindowSettings/Height', '0'))
+        if width and height:
+            self.resize(width, height)
+        desktop = QApplication.desktop()
+        center_width = (desktop.width() - self.width())//2
+        center_height = (desktop.height() - self.height())//2
+        self.move(center_width, center_height)
 
         self.action_run.triggered.connect(lambda: self.run_program(debug_on=False))
         self.action_debug.triggered.connect(lambda: self.run_program(debug_on=True))
@@ -47,7 +57,6 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
             for column, item in enumerate(items):
                 if len(item) > 40:
                     item = self.split_sentence(item, 40)
-                    print(item)
                 table_widget_item = QTableWidgetItem(item)
                 if column < 4:
                     table_widget_item.setTextAlignment(QtCore.Qt.AlignCenter)
@@ -68,6 +77,12 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
 
         lines = [' '.join(line) for line in lines]
         return '\n'.join(lines)
+
+    def closeEvent(self, event):
+        """Remember the current window size before closing"""
+        self.settings.setValue('WindowSettings/Width', self.width())
+        self.settings.setValue('WindowSettings/Height', self.height())
+        event.accept()
 
 
 if __name__ == '__main__':
