@@ -26,7 +26,7 @@
          <item>
           <widget class="QPlainTextEdit" name="output_text_edit">
            <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
+            <enum>Qt::ClickFocus</enum>
            </property>
            <property name="textInteractionFlags">
             <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -42,21 +42,14 @@
          <string>Code</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="1" column="1">
+         <item row="3" column="1">
           <widget class="QLabel" name="code_length_label">
            <property name="text">
             <string>0</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Code length:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
+         <item row="3" column="2">
           <spacer name="horizontalSpacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -69,11 +62,44 @@
            </property>
           </spacer>
          </item>
-         <item row="0" column="0" colspan="3">
-          <widget class="QPlainTextEdit" name="code_text_edit">
-           <property name="tabChangesFocus">
-            <bool>true</bool>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Code length:</string>
            </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="3">
+          <widget class="QWidget" name="widget" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QTabWidget" name="code_tabs">
+              <property name="focusPolicy">
+               <enum>Qt::ClickFocus</enum>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <widget class="QWidget" name="additional_tab">
+               <attribute name="title">
+                <string>+</string>
+               </attribute>
+              </widget>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -86,7 +112,7 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QTabWidget" name="tabWidget">
+          <widget class="QTabWidget" name="input_tabs">
            <property name="focusPolicy">
             <enum>Qt::ClickFocus</enum>
            </property>

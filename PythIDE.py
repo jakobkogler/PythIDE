@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QPlainTextEdit
 from PyQt5 import QtCore
 from mainwindow import Ui_MainWindow
 import subprocess
@@ -23,19 +23,36 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.doc_items = self.get_docs()
         self.fill_doc_table()
         self.doc_table_widget.resizeColumnsToContents()
+        self.code_text_edits = []
+        self.add_new_tab()
 
         self.action_run.triggered.connect(lambda: self.run_program(debug_on=False))
         self.action_debug.triggered.connect(lambda: self.run_program(debug_on=True))
         self.action_find.triggered.connect(self.find_line_edit.setFocus)
         self.action_about.triggered.connect(self.show_about)
         self.find_line_edit.textChanged.connect(self.fill_doc_table)
-        self.code_text_edit.textChanged.connect(self.update_code_length)
+        self.code_tabs.currentChanged.connect(self.change_tab)
+
+    def change_tab(self, tab_idx):
+        count = self.code_tabs.count()
+        if count == tab_idx + 1:
+            self.add_new_tab()
+        self.update_code_length()
+
+    def add_new_tab(self):
+        count = self.code_tabs.count()
+        code_text_edit = QPlainTextEdit()
+        code_text_edit.textChanged.connect(self.update_code_length)
+        self.code_text_edits.append(code_text_edit)
+        self.code_tabs.insertTab(count - 1, code_text_edit, str(count))
+        self.code_tabs.setCurrentIndex(count - 1)
 
     def run_program(self, debug_on):
-        code = self.code_text_edit.toPlainText()
+        tab_idx = self.code_tabs.currentIndex()
+        code = self.code_text_edits[tab_idx].toPlainText()
         code = '\n'.join(code.split('\r\n'))
 
-        if self.tabWidget.currentIndex() == 0:
+        if self.input_tabs.currentIndex() == 0:
             input_data = self.input_text_edit.toPlainText() + '\n'
             message = self.run_code(code, input_data, debug_on)
         else:
@@ -123,7 +140,8 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
                           '\n'.join([version_msg, "Copyright (C) 2015 Jakob Kogler, MIT License"]))
 
     def update_code_length(self):
-        code = self.code_text_edit.toPlainText()
+        current_tab = self.code_tabs.currentIndex()
+        code = self.code_text_edits[current_tab].toPlainText()
         self.code_length_label.setText(str(len(code)))
 
 
