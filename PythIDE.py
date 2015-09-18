@@ -29,6 +29,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.action_find.triggered.connect(self.find_line_edit.setFocus)
         self.action_about.triggered.connect(self.show_about)
         self.find_line_edit.textChanged.connect(self.fill_doc_table)
+        self.code_text_edit.textChanged.connect(self.update_code_length)
 
     def run_program(self, debug_on):
         code = self.code_text_edit.toPlainText()
@@ -120,6 +121,10 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
 
         QMessageBox.about(self, 'About PythIDE',
                           '\n'.join([version_msg, "Copyright (C) 2015 Jakob Kogler, MIT License"]))
+
+    def update_code_length(self):
+        code = self.code_text_edit.toPlainText()
+        self.code_length_label.setText(str(len(code)))
 
 
 if __name__ == '__main__':
