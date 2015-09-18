@@ -1,6 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QPlainTextEdit
-from PyQt5 import QtCore
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QPlainTextEdit, QShortcut
+from PyQt5 import QtCore, QtGui
 from mainwindow import Ui_MainWindow
 import subprocess
 
@@ -33,6 +33,10 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.find_line_edit.textChanged.connect(self.fill_doc_table)
         self.code_tabs.currentChanged.connect(self.change_tab)
 
+        # Keyboard shortcuts
+        self.add_tab_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+T', 0), self)
+        self.add_tab_shortcut.activated.connect(self.add_new_tab)
+
     def change_tab(self, tab_idx):
         count = self.code_tabs.count()
         if count == tab_idx + 1:
@@ -44,7 +48,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         code_text_edit = QPlainTextEdit()
         code_text_edit.textChanged.connect(self.update_code_length)
         self.code_text_edits.append(code_text_edit)
-        self.code_tabs.insertTab(count - 1, code_text_edit, str(count))
+        self.code_tabs.insertTab(count - 1, code_text_edit, "&" + str(count))
         self.code_tabs.setCurrentIndex(count - 1)
 
     def run_program(self, debug_on):
