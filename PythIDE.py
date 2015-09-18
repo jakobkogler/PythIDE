@@ -20,6 +20,12 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         center_height = (desktop.height() - self.height())//2
         self.move(center_width, center_height)
 
+        # Keyboard shortcuts
+        self.shortcuts = []
+        add_tab_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+T', 0), self)
+        add_tab_shortcut.activated.connect(self.add_new_tab)
+        self.shortcuts.append(add_tab_shortcut)
+
         self.doc_items = self.get_docs()
         self.fill_doc_table()
         self.doc_table_widget.resizeColumnsToContents()
@@ -33,10 +39,6 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.find_line_edit.textChanged.connect(self.fill_doc_table)
         self.code_tabs.currentChanged.connect(self.change_tab)
 
-        # Keyboard shortcuts
-        self.add_tab_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+T', 0), self)
-        self.add_tab_shortcut.activated.connect(self.add_new_tab)
-
     def change_tab(self, tab_idx):
         count = self.code_tabs.count()
         if count == tab_idx + 1:
@@ -48,8 +50,15 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         code_text_edit = QPlainTextEdit()
         code_text_edit.textChanged.connect(self.update_code_length)
         self.code_text_edits.append(code_text_edit)
-        self.code_tabs.insertTab(count - 1, code_text_edit, "&" + str(count))
+        self.code_tabs.insertTab(count - 1, code_text_edit, str(count))
         self.code_tabs.setCurrentIndex(count - 1)
+        code_text_edit.setFocus()
+        code_text_edit.setTabChangesFocus(True)
+
+        if count < 10:
+            tab_shortcut = QShortcut(QtGui.QKeySequence('Alt+' + str(count), 0), self)
+            tab_shortcut.activated.connect(lambda: self.code_tabs.setCurrentIndex(count - 1))
+            self.shortcuts.append(tab_shortcut)
 
     def run_program(self, debug_on):
         tab_idx = self.code_tabs.currentIndex()
