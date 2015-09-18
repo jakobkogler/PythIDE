@@ -11,7 +11,14 @@ An IDE for the golfing language [Pyth](https://github.com/isaacg1/pyth)
 
 ## Usage ##
 
-Before the first start, you have to run the script `prebuild.sh`.
+First clone the project and fetch the submodule pyth: 
+
+```
+git clone git@github.com:jakobkogler/PythIDE.git
+git submodule update --init 
+```
+
+Then before the first start, you have to run the script `prebuild.sh`.
 It compiles `mainwindow.ui` to Python and determines the version number via Git.
 Afterwards you can start the the program with
 
