@@ -246,9 +246,8 @@
    </attribute>
    <addaction name="action_run"/>
    <addaction name="action_debug"/>
-   <addaction name="separator"/>
-   <addaction name="action_find"/>
    <addaction name="action_about"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_run">

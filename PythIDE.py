@@ -25,6 +25,9 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         add_tab_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+T', 0), self)
         add_tab_shortcut.activated.connect(self.add_new_tab)
         self.shortcuts.append(add_tab_shortcut)
+        find_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+F', 0), self)
+        find_shortcut.activated.connect(self.find_line_edit.setFocus)
+        self.shortcuts.append(find_shortcut)
 
         self.doc_items = self.get_docs()
         self.fill_doc_table()
@@ -34,7 +37,6 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
 
         self.action_run.triggered.connect(lambda: self.run_program(debug_on=False))
         self.action_debug.triggered.connect(lambda: self.run_program(debug_on=True))
-        self.action_find.triggered.connect(self.find_line_edit.setFocus)
         self.action_about.triggered.connect(self.show_about)
         self.find_line_edit.textChanged.connect(self.fill_doc_table)
         self.code_tabs.currentChanged.connect(self.change_tab)
