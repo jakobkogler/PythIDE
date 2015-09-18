@@ -56,6 +56,9 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.code_tabs.setCurrentIndex(count - 1)
         code_text_edit.setFocus()
         code_text_edit.setTabChangesFocus(True)
+        monospace_font = QtGui.QFont()
+        monospace_font.setFamily("Monospace")
+        code_text_edit.setFont(monospace_font)
 
         if count < 10:
             tab_shortcut = QShortcut(QtGui.QKeySequence('Alt+' + str(count), 0), self)

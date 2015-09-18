@@ -25,6 +25,11 @@
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <widget class="QPlainTextEdit" name="output_text_edit">
+           <property name="font">
+            <font>
+             <family>Monospace</family>
+            </font>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::ClickFocus</enum>
            </property>
@@ -126,6 +131,11 @@
             <layout class="QVBoxLayout" name="verticalLayout_4">
              <item>
               <widget class="QPlainTextEdit" name="input_text_edit">
+               <property name="font">
+                <font>
+                 <family>Monospace</family>
+                </font>
+               </property>
                <property name="tabChangesFocus">
                 <bool>true</bool>
                </property>
