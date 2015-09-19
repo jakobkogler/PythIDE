@@ -59,6 +59,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         monospace_font = QtGui.QFont()
         monospace_font.setFamily("Monospace")
         code_text_edit.setFont(monospace_font)
+        self.update_code_length()
 
         if count < 10:
             tab_shortcut = QShortcut(QtGui.QKeySequence('Alt+' + str(count), 0), self)
@@ -159,8 +160,9 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
 
     def update_code_length(self):
         current_tab = self.code_tabs.currentIndex()
-        code = self.code_text_edits[current_tab].toPlainText()
-        self.code_length_label.setText(str(len(code)))
+        code_length = len(self.code_text_edits[current_tab].toPlainText())
+        self.code_length_label.setText(str(code_length))
+        self.code_tabs.setTabText(current_tab, 'Tab {} ({} chars)'.format(current_tab + 1, code_length))
 
 
 if __name__ == '__main__':
