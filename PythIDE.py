@@ -85,7 +85,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.output_text_edit.setPlainText(message)
 
     @staticmethod
-    def run_code(self, code, input_data, debug_on):
+    def run_code(code, input_data, debug_on):
         pyth_process = subprocess.Popen(['/usr/bin/env', 'python3', 'pyth/pyth.py',
                                          '-cd' if debug_on else '-c', code],
                                         stdin=subprocess.PIPE,
@@ -146,7 +146,6 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.settings.setValue('WindowSettings/Height', self.height())
         event.accept()
 
-    @staticmethod
     def show_about(self):
         try:
             with open('version.txt', 'r') as f:
@@ -156,9 +155,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         except FileNotFoundError:
             version_msg = 'Version unknown'
 
-        message_box = QMessageBox()
-        message_box.about('About PythIDE',
-                          '\n'.join([version_msg, "Copyright (C) 2015 Jakob Kogler, MIT License"]))
+        QMessageBox().about(self, 'About PythIDE', '\n'.join([version_msg, "Copyright (C) 2015 Jakob Kogler, MIT License"]))
 
     def update_code_length(self):
         current_tab = self.code_tabs.currentIndex()
