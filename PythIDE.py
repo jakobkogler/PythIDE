@@ -34,12 +34,11 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.action_about.triggered.connect(self.show_about)
         self.find_line_edit.textChanged.connect(self.fill_doc_table)
         self.code_tabs.currentChanged.connect(self.update_code_length)
+        self.action_open_tab.triggered.connect(self.add_new_tab)
+        self.action_close_tab.triggered.connect(self.delete_tab)
 
         # Keyboard shortcuts
         self.shortcuts = []
-        add_tab_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+T', 0), self)
-        add_tab_shortcut.activated.connect(self.add_new_tab)
-        self.shortcuts.append(add_tab_shortcut)
         find_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+F', 0), self)
         find_shortcut.activated.connect(self.find_line_edit.setFocus)
         self.shortcuts.append(find_shortcut)
@@ -49,9 +48,6 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         rotate_back = QShortcut(QtGui.QKeySequence('Ctrl+Shift+Tab', 0), self)
         rotate_back.activated.connect(self.rotate_back_tabs)
         self.shortcuts.append(rotate_back)
-        delete_tab = QShortcut(QtGui.QKeySequence('Ctrl+D', 0), self)
-        delete_tab.activated.connect(self.delete_tab)
-        self.shortcuts.append(delete_tab)
 
     def delete_tab(self):
         current_index = self.code_tabs.currentIndex()
