@@ -261,7 +261,16 @@
     <addaction name="action_run"/>
     <addaction name="action_debug"/>
    </widget>
+   <widget class="QMenu" name="menuExport">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="action_heroku"/>
+    <addaction name="action_to_clipboard"/>
+    <addaction name="action_define_template"/>
+   </widget>
    <addaction name="menuRun"/>
+   <addaction name="menuExport"/>
    <addaction name="menuCode_Tabs"/>
    <addaction name="menu"/>
   </widget>
@@ -310,6 +319,21 @@
   <action name="action_about">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="action_to_clipboard">
+   <property name="text">
+    <string>Export to Clipboard</string>
+   </property>
+  </action>
+  <action name="action_heroku">
+   <property name="text">
+    <string>Switch to Heroku-App</string>
+   </property>
+  </action>
+  <action name="action_define_template">
+   <property name="text">
+    <string>Define Template for Export</string>
    </property>
   </action>
  </widget>

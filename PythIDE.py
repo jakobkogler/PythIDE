@@ -1,8 +1,28 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QPlainTextEdit, QShortcut
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, \
+    QTableWidgetItem, QMessageBox, QPlainTextEdit, QShortcut
 from PyQt5 import QtCore, QtGui
 from mainwindow import Ui_MainWindow
+from clipboard_template import Ui_TemplateDialog
 import subprocess
+from urllib.parse import quote
+
+
+example_template = """\
+# Pyth, {length} bytes
+
+    {code}
+
+Try it online: [Demonstration][1] or [Test Suite][2]
+
+### Expanation:
+
+    {code}
+
+
+  [1]: {url}
+  [2]: {url_test_suite}\
+"""
 
 
 class IdeMainWindow(QMainWindow, Ui_MainWindow):
@@ -36,6 +56,9 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.code_tabs.currentChanged.connect(self.update_code_length)
         self.action_open_tab.triggered.connect(self.add_new_tab)
         self.action_close_tab.triggered.connect(self.delete_tab)
+        self.action_to_clipboard.triggered.connect(self.to_clipboard)
+        self.action_heroku.triggered.connect(self.open_in_browser)
+        self.action_define_template.triggered.connect(self.define_template)
 
         # Keyboard shortcuts
         self.shortcuts = []
@@ -48,6 +71,41 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         rotate_back = QShortcut(QtGui.QKeySequence('Ctrl+Shift+Tab', 0), self)
         rotate_back.activated.connect(self.rotate_back_tabs)
         self.shortcuts.append(rotate_back)
+
+    def get_url(self, show_test_suite=False):
+        code = self.code_tabs.currentWidget().toPlainText()
+        input_data = self.input_text_edit.toPlainText()
+        test_suite_data = self.test_suite_text_edit.toPlainText()
+        url_parameter = dict()
+        url_parameter['code'] = code
+        if input_data:
+            url_parameter['input'] = input_data
+        if test_suite_data:
+            url_parameter['test_suite_input'] = test_suite_data
+            url_parameter['test_suite'] = '1' if show_test_suite else '0'
+            input_size = self.test_suite_spinbox.value()
+            if input_size > 1:
+                url_parameter['input_size'] = str(input_size)
+        combined_parameter = '&'.join(key + '=' + quote(value) for key, value in url_parameter.items())
+        return 'http://pyth.herokuapp.com/?' + combined_parameter
+
+    def open_in_browser(self):
+        url = self.get_url(self.input_tabs.currentIndex() == 1)
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
+
+    def to_clipboard(self):
+        code = self.code_tabs.currentWidget().toPlainText()
+
+        template = self.settings.value('Template/Template', example_template)
+        export = template.format(code=code, length=self.code_length(), url=self.get_url(),
+                                 url_test_suite=self.get_url(True))
+
+        clipboard = QApplication.clipboard()
+        clipboard.setText(export)
+
+    def define_template(self):
+        template_diaglog = TemplateDialog(self.settings)
+        template_diaglog.exec_()
 
     def delete_tab(self):
         current_index = self.code_tabs.currentIndex()
@@ -175,11 +233,31 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
 
         QMessageBox().about(self, 'About PythIDE', '\n'.join([version_msg, "Copyright (C) 2015 Jakob Kogler, MIT License"]))
 
+    def code_length(self):
+        return len(self.code_tabs.currentWidget().toPlainText())
+
     def update_code_length(self):
         current_tab = self.code_tabs.currentIndex()
-        code_length = len(self.code_tabs.currentWidget().toPlainText())
+        code_length = self.code_length()
         self.code_length_label.setText(str(code_length))
         self.code_tabs.setTabText(current_tab, 'Tab &{} ({} chars)'.format(current_tab + 1, code_length))
+
+
+class TemplateDialog(QDialog, Ui_TemplateDialog):
+    def __init__(self, settings):
+        QDialog.__init__(self)
+        self.setupUi(self)
+        self.settings = settings
+
+        template_text = self.settings.value('Template/Template', example_template)
+        self.template_text_edit.setPlainText(template_text)
+
+        # Connect signals and slots
+        self.buttonBox.accepted.connect(self.accept_template)
+
+    def accept_template(self):
+        template_text = self.template_text_edit.toPlainText()
+        self.settings.setValue('Template/Template', template_text)
 
 
 if __name__ == '__main__':
