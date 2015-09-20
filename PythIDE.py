@@ -20,19 +20,20 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         center_height = (desktop.height() - self.height())//2
         self.move(center_width, center_height)
 
+        # Prepare docs
         self.doc_items = self.get_docs()
         self.fill_doc_table()
         self.doc_table_widget.resizeColumnsToContents()
+
+        # Prepare code tabs
         self.add_new_tab()
 
-
-
-
+        # Connect signals and slots
         self.action_run.triggered.connect(lambda: self.run_program(debug_on=False))
         self.action_debug.triggered.connect(lambda: self.run_program(debug_on=True))
         self.action_about.triggered.connect(self.show_about)
         self.find_line_edit.textChanged.connect(self.fill_doc_table)
-        self.code_tabs.currentChanged.connect(self.change_tab)
+        self.code_tabs.currentChanged.connect(self.update_code_length)
 
         # Keyboard shortcuts
         self.shortcuts = []
@@ -54,39 +55,31 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
 
     def delete_tab(self):
         current_index = self.code_tabs.currentIndex()
-        next_index = current_index + 1 if current_index + 1 < self.code_tabs.count() - 1 else current_index - 1
-        self.code_tabs.setCurrentIndex(next_index)
         self.code_tabs.removeTab(current_index)
 
         # Update all header, quite hacky
         current_index = self.code_tabs.currentIndex()
-        for i in range(self.code_tabs.count() - 1):
+        for i in range(self.code_tabs.count()):
             self.code_tabs.setCurrentIndex(i)
             self.update_code_length()
         self.code_tabs.setCurrentIndex(current_index)
 
     def rotate_tabs(self):
         current_index = self.code_tabs.currentIndex()
-        new_index = (current_index + 1) % (self.code_tabs.count() - 1)
+        new_index = (current_index + 1) % self.code_tabs.count()
         self.code_tabs.setCurrentIndex(new_index)
 
     def rotate_back_tabs(self):
         current_index = self.code_tabs.currentIndex()
-        new_index = (current_index - 1) % (self.code_tabs.count() - 1)
+        new_index = (current_index - 1) % self.code_tabs.count()
         self.code_tabs.setCurrentIndex(new_index)
-
-    def change_tab(self, tab_idx):
-        count = self.code_tabs.count()
-        if count == tab_idx + 1:
-            self.add_new_tab()
-        self.update_code_length()
 
     def add_new_tab(self):
         count = self.code_tabs.count()
         code_text_edit = QPlainTextEdit()
         code_text_edit.textChanged.connect(self.update_code_length)
-        self.code_tabs.insertTab(count - 1, code_text_edit, str(count))
-        self.code_tabs.setCurrentIndex(count - 1)
+        self.code_tabs.addTab(code_text_edit, str(count + 1))
+        self.code_tabs.setCurrentIndex(count)
         code_text_edit.setFocus()
         code_text_edit.setTabChangesFocus(True)
         monospace_font = QtGui.QFont()

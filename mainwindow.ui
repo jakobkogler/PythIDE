@@ -95,13 +95,8 @@
                <enum>Qt::ClickFocus</enum>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>-1</number>
               </property>
-              <widget class="QWidget" name="additional_tab">
-               <attribute name="title">
-                <string>+</string>
-               </attribute>
-              </widget>
              </widget>
             </item>
            </layout>
