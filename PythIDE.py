@@ -20,6 +20,20 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         center_height = (desktop.height() - self.height())//2
         self.move(center_width, center_height)
 
+        self.doc_items = self.get_docs()
+        self.fill_doc_table()
+        self.doc_table_widget.resizeColumnsToContents()
+        self.add_new_tab()
+
+
+
+
+        self.action_run.triggered.connect(lambda: self.run_program(debug_on=False))
+        self.action_debug.triggered.connect(lambda: self.run_program(debug_on=True))
+        self.action_about.triggered.connect(self.show_about)
+        self.find_line_edit.textChanged.connect(self.fill_doc_table)
+        self.code_tabs.currentChanged.connect(self.change_tab)
+
         # Keyboard shortcuts
         self.shortcuts = []
         add_tab_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+T', 0), self)
@@ -28,18 +42,22 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         find_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+F', 0), self)
         find_shortcut.activated.connect(self.find_line_edit.setFocus)
         self.shortcuts.append(find_shortcut)
+        rotate = QShortcut(QtGui.QKeySequence('Ctrl+Tab', 0), self)
+        rotate.activated.connect(self.rotate_tabs)
+        self.shortcuts.append(rotate)
+        rotate_back = QShortcut(QtGui.QKeySequence('Ctrl+Shift+Tab', 0), self)
+        rotate_back.activated.connect(self.rotate_back_tabs)
+        self.shortcuts.append(rotate_back)
 
-        self.doc_items = self.get_docs()
-        self.fill_doc_table()
-        self.doc_table_widget.resizeColumnsToContents()
-        self.code_text_edits = []
-        self.add_new_tab()
+    def rotate_tabs(self):
+        current_index = self.code_tabs.currentIndex()
+        new_index = (current_index + 1) % (self.code_tabs.count() - 1)
+        self.code_tabs.setCurrentIndex(new_index)
 
-        self.action_run.triggered.connect(lambda: self.run_program(debug_on=False))
-        self.action_debug.triggered.connect(lambda: self.run_program(debug_on=True))
-        self.action_about.triggered.connect(self.show_about)
-        self.find_line_edit.textChanged.connect(self.fill_doc_table)
-        self.code_tabs.currentChanged.connect(self.change_tab)
+    def rotate_back_tabs(self):
+        current_index = self.code_tabs.currentIndex()
+        new_index = (current_index - 1) % (self.code_tabs.count() - 1)
+        self.code_tabs.setCurrentIndex(new_index)
 
     def change_tab(self, tab_idx):
         count = self.code_tabs.count()
@@ -51,7 +69,6 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         count = self.code_tabs.count()
         code_text_edit = QPlainTextEdit()
         code_text_edit.textChanged.connect(self.update_code_length)
-        self.code_text_edits.append(code_text_edit)
         self.code_tabs.insertTab(count - 1, code_text_edit, str(count))
         self.code_tabs.setCurrentIndex(count - 1)
         code_text_edit.setFocus()
@@ -61,14 +78,9 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         code_text_edit.setFont(monospace_font)
         self.update_code_length()
 
-        if count < 10:
-            tab_shortcut = QShortcut(QtGui.QKeySequence('Alt+' + str(count), 0), self)
-            tab_shortcut.activated.connect(lambda: self.code_tabs.setCurrentIndex(count - 1))
-            self.shortcuts.append(tab_shortcut)
-
     def run_program(self, debug_on):
-        tab_idx = self.code_tabs.currentIndex()
-        code = self.code_text_edits[tab_idx].toPlainText()
+        code_text_edit = self.code_tabs.currentWidget()
+        code = code_text_edit.toPlainText()
         code = '\n'.join(code.split('\r\n'))
 
         if self.input_tabs.currentIndex() == 0:
@@ -160,9 +172,9 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
 
     def update_code_length(self):
         current_tab = self.code_tabs.currentIndex()
-        code_length = len(self.code_text_edits[current_tab].toPlainText())
+        code_length = len(self.code_tabs.currentWidget().toPlainText())
         self.code_length_label.setText(str(code_length))
-        self.code_tabs.setTabText(current_tab, 'Tab {} ({} chars)'.format(current_tab + 1, code_length))
+        self.code_tabs.setTabText(current_tab, 'Tab &{} ({} chars)'.format(current_tab + 1, code_length))
 
 
 if __name__ == '__main__':
