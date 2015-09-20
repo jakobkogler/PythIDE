@@ -48,6 +48,22 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         rotate_back = QShortcut(QtGui.QKeySequence('Ctrl+Shift+Tab', 0), self)
         rotate_back.activated.connect(self.rotate_back_tabs)
         self.shortcuts.append(rotate_back)
+        delete_tab = QShortcut(QtGui.QKeySequence('Ctrl+D', 0), self)
+        delete_tab.activated.connect(self.delete_tab)
+        self.shortcuts.append(delete_tab)
+
+    def delete_tab(self):
+        current_index = self.code_tabs.currentIndex()
+        next_index = current_index + 1 if current_index + 1 < self.code_tabs.count() - 1 else current_index - 1
+        self.code_tabs.setCurrentIndex(next_index)
+        self.code_tabs.removeTab(current_index)
+
+        # Update all header, quite hacky
+        current_index = self.code_tabs.currentIndex()
+        for i in range(self.code_tabs.count() - 1):
+            self.code_tabs.setCurrentIndex(i)
+            self.update_code_length()
+        self.code_tabs.setCurrentIndex(current_index)
 
     def rotate_tabs(self):
         current_index = self.code_tabs.currentIndex()
