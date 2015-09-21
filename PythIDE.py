@@ -62,6 +62,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.action_heroku.triggered.connect(self.open_in_browser)
         self.action_define_template.triggered.connect(self.define_template)
         self.action_import_heroku.triggered.connect(self.import_heroku)
+        self.action_duplicate.triggered.connect(self.duplicate)
 
         # Keyboard shortcuts
         self.shortcuts = []
@@ -178,6 +179,12 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         monospace_font.setFamily("Monospace")
         code_text_edit.setFont(monospace_font)
         self.update_code_length()
+
+    @pyqtSlot()
+    def duplicate(self):
+        code = self.code_tabs.currentWidget().toPlainText()
+        self.add_new_tab()
+        self.code_tabs.currentWidget().setPlainText(code)
 
     def run_program(self, debug_on):
         code_text_edit = self.code_tabs.currentWidget()

@@ -246,6 +246,7 @@
      <string>Code Tabs</string>
     </property>
     <addaction name="action_open_tab"/>
+    <addaction name="action_duplicate"/>
     <addaction name="action_close_tab"/>
    </widget>
    <widget class="QMenu" name="menu">
@@ -314,7 +315,7 @@
     <string>Close current Tab</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+D</string>
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="action_about">
@@ -340,6 +341,14 @@
   <action name="action_import_heroku">
    <property name="text">
     <string>Import from Heroku-App</string>
+   </property>
+  </action>
+  <action name="action_duplicate">
+   <property name="text">
+    <string>Duplicate current Tab</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
  </widget>
