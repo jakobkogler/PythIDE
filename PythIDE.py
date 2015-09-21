@@ -5,7 +5,8 @@ from PyQt5 import QtCore, QtGui
 from mainwindow import Ui_MainWindow
 from clipboard_template import Ui_TemplateDialog
 import subprocess
-from urllib.parse import quote
+from urllib.parse import quote, unquote
+import re
 
 
 example_template = """\
@@ -59,6 +60,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.action_to_clipboard.triggered.connect(self.to_clipboard)
         self.action_heroku.triggered.connect(self.open_in_browser)
         self.action_define_template.triggered.connect(self.define_template)
+        self.action_import_heroku.triggered.connect(self.import_heroku)
 
         # Keyboard shortcuts
         self.shortcuts = []
@@ -71,6 +73,33 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         rotate_back = QShortcut(QtGui.QKeySequence('Ctrl+Shift+Tab', 0), self)
         rotate_back.activated.connect(self.rotate_back_tabs)
         self.shortcuts.append(rotate_back)
+
+    def import_heroku(self):
+        clipboard = QApplication.clipboard()
+        url = clipboard.text()
+        if 'pyth.herokuapp.com' in url:
+            url = url.replace('+', ' ')
+            parameters = re.split('[?=&]', url)[1:]
+            params_dict = {parameters[i]: unquote(parameters[i+1]) for i in range(0, len(parameters), 2)}
+
+            if 'code' in params_dict:
+                if len(self.code_tabs.currentWidget().toPlainText()):
+                    self.add_new_tab()
+                self.code_tabs.currentWidget().setPlainText(params_dict['code'])
+            if 'input' in params_dict:
+                self.input_text_edit.setPlainText(params_dict['input'])
+            if 'test_suite_input' in params_dict:
+                self.test_suite_text_edit.setPlainText(params_dict['test_suite_input'])
+            if 'input_size' in params_dict:
+                self.test_suite_spinbox.setValue(int(params_dict['input_size']))
+            if 'test_suite' in params_dict:
+                self.input_tabs.setCurrentIndex(int(params_dict['test_suite']))
+            else:
+                self.input_tabs.setCurrentIndex(0)
+        else:
+            QMessageBox().about(self, 'Import from Heroku-App',
+                                '\n'.join(['Copy the Permalink of the Heroku-App.',
+                                           'The url will be extracted from the Clipboard.']))
 
     def get_url(self, show_test_suite=False):
         code = self.code_tabs.currentWidget().toPlainText()

@@ -265,6 +265,7 @@
     <property name="title">
      <string>Tools</string>
     </property>
+    <addaction name="action_import_heroku"/>
     <addaction name="action_heroku"/>
     <addaction name="action_to_clipboard"/>
     <addaction name="action_define_template"/>
@@ -334,6 +335,11 @@
   <action name="action_define_template">
    <property name="text">
     <string>Define Template for Export</string>
+   </property>
+  </action>
+  <action name="action_import_heroku">
+   <property name="text">
+    <string>Import from Heroku-App</string>
    </property>
   </action>
  </widget>
