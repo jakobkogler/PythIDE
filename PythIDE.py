@@ -8,6 +8,7 @@ from clipboard_template import Ui_TemplateDialog
 import subprocess
 from urllib.parse import quote, unquote
 import re
+import os
 
 
 example_template = """\
@@ -219,7 +220,9 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
 
     @staticmethod
     def get_docs():
-        with open('pyth/web-docs.txt', 'r') as f:
+        real_path = os.path.realpath(__file__)
+        web_docs_path = os.path.split(real_path)[0] + '/pyth/web-docs.txt'
+        with open(web_docs_path, 'r') as f:
             return [line.split(' ', maxsplit=4) for line in f]
 
     @pyqtSlot()
