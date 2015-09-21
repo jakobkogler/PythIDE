@@ -208,7 +208,9 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
 
     @staticmethod
     def run_code(code, input_data, debug_on):
-        pyth_process = subprocess.Popen(['/usr/bin/env', 'python3', 'pyth/pyth.py',
+        real_path = os.path.realpath(__file__)
+        pyth_path = os.path.split(real_path)[0] + '/pyth/pyth.py'
+        pyth_process = subprocess.Popen(['/usr/bin/env', 'python3', pyth_path,
                                          '-cd' if debug_on else '-c', code],
                                         stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE,
