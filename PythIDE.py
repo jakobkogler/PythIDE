@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, \
     QTableWidgetItem, QMessageBox, QPlainTextEdit, QShortcut
 from PyQt5 import QtCore, QtGui
+from PyQt5.QtCore import pyqtSlot
 from mainwindow import Ui_MainWindow
 from clipboard_template import Ui_TemplateDialog
 import subprocess
@@ -74,6 +75,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         rotate_back.activated.connect(self.rotate_back_tabs)
         self.shortcuts.append(rotate_back)
 
+    @pyqtSlot()
     def import_heroku(self):
         clipboard = QApplication.clipboard()
         url = clipboard.text()
@@ -118,10 +120,12 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         combined_parameter = '&'.join(key + '=' + quote(value) for key, value in url_parameter.items())
         return 'http://pyth.herokuapp.com/?' + combined_parameter
 
+    @pyqtSlot()
     def open_in_browser(self):
         url = self.get_url(self.input_tabs.currentIndex() == 1)
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
 
+    @pyqtSlot()
     def to_clipboard(self):
         code = self.code_tabs.currentWidget().toPlainText()
 
@@ -132,10 +136,12 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         clipboard = QApplication.clipboard()
         clipboard.setText(export)
 
+    @pyqtSlot()
     def define_template(self):
         template_diaglog = TemplateDialog(self.settings)
         template_diaglog.exec_()
 
+    @pyqtSlot()
     def delete_tab(self):
         current_index = self.code_tabs.currentIndex()
         self.code_tabs.removeTab(current_index)
@@ -147,16 +153,19 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
             self.update_code_length()
         self.code_tabs.setCurrentIndex(current_index)
 
+    @pyqtSlot()
     def rotate_tabs(self):
         current_index = self.code_tabs.currentIndex()
         new_index = (current_index + 1) % self.code_tabs.count()
         self.code_tabs.setCurrentIndex(new_index)
 
+    @pyqtSlot()
     def rotate_back_tabs(self):
         current_index = self.code_tabs.currentIndex()
         new_index = (current_index - 1) % self.code_tabs.count()
         self.code_tabs.setCurrentIndex(new_index)
 
+    @pyqtSlot()
     def add_new_tab(self):
         count = self.code_tabs.count()
         code_text_edit = QPlainTextEdit()
@@ -206,6 +215,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         with open('pyth/web-docs.txt', 'r') as f:
             return [line.split(' ', maxsplit=4) for line in f]
 
+    @pyqtSlot()
     def fill_doc_table(self):
         self.doc_table_widget.setRowCount(0)
         self.doc_table_widget.setColumnCount(5)
@@ -251,6 +261,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.settings.setValue('WindowSettings/Height', self.height())
         event.accept()
 
+    @pyqtSlot()
     def show_about(self):
         try:
             with open('version.txt', 'r') as f:
@@ -265,6 +276,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
     def code_length(self):
         return len(self.code_tabs.currentWidget().toPlainText())
 
+    @pyqtSlot()
     def update_code_length(self):
         current_tab = self.code_tabs.currentIndex()
         code_length = self.code_length()
