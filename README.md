@@ -14,7 +14,7 @@ An IDE for the golfing language [Pyth](https://github.com/isaacg1/pyth)
 First clone the project and fetch the submodule pyth: 
 
 ```
-git clone git@github.com:jakobkogler/PythIDE.git
+git clone https://github.com/jakobkogler/PythIDE.git
 git submodule update --init 
 ```
 
