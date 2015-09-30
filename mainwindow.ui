@@ -261,6 +261,7 @@
     </property>
     <addaction name="action_run"/>
     <addaction name="action_debug"/>
+    <addaction name="action_multi_line"/>
    </widget>
    <widget class="QMenu" name="menuExport">
     <property name="title">
@@ -349,6 +350,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="action_multi_line">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use Multi-Line Mode</string>
    </property>
   </action>
  </widget>
