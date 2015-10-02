@@ -1,6 +1,7 @@
 import sys
 from contextlib import redirect_stdout
 import io
+import traceback
 from PyQt5.QtCore import QThread, pyqtSignal
 sys.path.insert(0, './pyth')
 from pyth import *
@@ -26,10 +27,15 @@ class CodeExecutor(QThread):
         self.debug_on = debug_on
         self.multi_line_on = multi_line_on
 
+        if multi_line_on:
+            self.code = preprocess_multiline(self.code)
+
     def run(self):
         self.begin.emit()
 
-        with redirect_stdout(OutputWriter(self.text_edit_write)):
+        output_writer = OutputWriter(self.text_edit_write)
+        sys.stderr = output_writer
+        with redirect_stdout(output_writer):
             if isinstance(self.inp, list):
                 for input_data in self.inp:
                     self.execute_code(input_data)
@@ -39,6 +45,7 @@ class CodeExecutor(QThread):
 
         sys.stdin = sys.__stdin__
         sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
 
         self.finished.emit()
 
@@ -48,18 +55,26 @@ class CodeExecutor(QThread):
         global c_to_i
 
         sys.stdin = io.StringIO(input_data)
-        error = None
 
         saved_env = c.deepcopy(environment)
         saved_c_to_i = c.deepcopy(c_to_i)
 
         try:
             safe_mode = False
-            exec(general_parse(self.code), environment)
+
+            py_code_line = general_parse(self.code)
+            if self.debug_on:
+                print('{:=^50}'.format(' ' + str(len(self.code)) + ' chars '))
+                print(self.code)
+                print('='*50)
+                print(py_code_line)
+                print('='*50)
+
+            exec(py_code_line, environment)
         except SystemExit:
             pass
-        except Exception as e:
-            error = e
+        except Exception as error:
+            traceback.print_exc()
 
         for key in saved_env:
             environment[key] = saved_env[key]
