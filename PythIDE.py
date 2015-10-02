@@ -9,6 +9,7 @@ import subprocess
 from urllib.parse import quote, unquote
 import re
 import os
+from execute_pyth import CodeExecutor
 
 
 example_template = """\
@@ -187,25 +188,36 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.add_new_tab()
         self.code_tabs.currentWidget().setPlainText(code)
 
+    def output_clear(self):
+        self.output_text_edit.clear()
+
+    def output_write(self, text):
+        self.output_text_edit.insertPlainText(text)
+
     def run_program(self, debug_on):
         code_text_edit = self.code_tabs.currentWidget()
         code = code_text_edit.toPlainText()
         code = '\n'.join(code.split('\r\n'))
         multi_line_on = self.action_multi_line.isChecked()
 
-        if self.input_tabs.currentIndex() == 0:
-            input_data = self.input_text_edit.toPlainText() + '\n'
-            message = self.run_code(code, input_data, debug_on, multi_line_on)
-        else:
-            input_data = self.test_suite_text_edit.toPlainText().split('\n')
-            input_length = self.test_suite_spinbox.value()
-            input_data = ['\n'.join(input_data[i:i+input_length]) for i in range(0, len(input_data), input_length)]
-
-            messages = [self.run_code(code, input_data[0], debug_on, multi_line_on)] + \
-                [self.run_code(code, input_data, False, multi_line_on) for input_data in input_data[1:]]
-            message = '\n'.join(messages)
-
-        self.output_text_edit.setPlainText(message)
+        self.code_executor = CodeExecutor(code, '')
+        self.code_executor.text_edit_clear.connect(self.output_clear)
+        self.code_executor.text_edit_write.connect(self.output_write)
+        self.code_executor.start()
+        #run_print_code(code, '', self.output_text_edit)
+        # if self.input_tabs.currentIndex() == 0:
+        #     input_data = self.input_text_edit.toPlainText() + '\n'
+        #     message = self.run_code(code, input_data, debug_on, multi_line_on)
+        # else:
+        #     input_data = self.test_suite_text_edit.toPlainText().split('\n')
+        #     input_length = self.test_suite_spinbox.value()
+        #     input_data = ['\n'.join(input_data[i:i+input_length]) for i in range(0, len(input_data), input_length)]
+        #
+        #     messages = [self.run_code(code, input_data[0], debug_on, multi_line_on)] + \
+        #         [self.run_code(code, input_data, False, multi_line_on) for input_data in input_data[1:]]
+        #     message = '\n'.join(messages)
+        #
+        #self.output_text_edit.setPlainText(message)
 
     @staticmethod
     def run_code(code, input_data, debug_on=False, multi_line_on=False):
