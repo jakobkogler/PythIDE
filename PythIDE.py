@@ -44,6 +44,9 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         center_height = (desktop.height() - self.height())//2
         self.move(center_width, center_height)
 
+        self.code_executor = None
+        self.code_execution_running = False
+
         # Prepare docs
         self.doc_items = self.get_docs()
         self.fill_doc_table()
@@ -188,54 +191,37 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.add_new_tab()
         self.code_tabs.currentWidget().setPlainText(code)
 
-    def output_clear(self):
+    def code_execution_start(self):
         self.output_text_edit.clear()
+        self.output_box.setTitle('Output (Running)')
 
     def output_write(self, text):
         self.output_text_edit.insertPlainText(text)
 
+    def code_execution_end(self):
+        self.output_box.setTitle('Output')
+        self.code_execution_running = False
+
     def run_program(self, debug_on):
-        code_text_edit = self.code_tabs.currentWidget()
-        code = code_text_edit.toPlainText()
-        code = '\n'.join(code.split('\r\n'))
-        multi_line_on = self.action_multi_line.isChecked()
+        if not self.code_execution_running:
+            self.code_execution_running = True
+            code_text_edit = self.code_tabs.currentWidget()
+            code = code_text_edit.toPlainText()
+            code = '\n'.join(code.split('\r\n'))
+            multi_line_on = self.action_multi_line.isChecked()
 
-        self.code_executor = CodeExecutor(code, '')
-        self.code_executor.text_edit_clear.connect(self.output_clear)
-        self.code_executor.text_edit_write.connect(self.output_write)
-        self.code_executor.start()
-        #run_print_code(code, '', self.output_text_edit)
-        # if self.input_tabs.currentIndex() == 0:
-        #     input_data = self.input_text_edit.toPlainText() + '\n'
-        #     message = self.run_code(code, input_data, debug_on, multi_line_on)
-        # else:
-        #     input_data = self.test_suite_text_edit.toPlainText().split('\n')
-        #     input_length = self.test_suite_spinbox.value()
-        #     input_data = ['\n'.join(input_data[i:i+input_length]) for i in range(0, len(input_data), input_length)]
-        #
-        #     messages = [self.run_code(code, input_data[0], debug_on, multi_line_on)] + \
-        #         [self.run_code(code, input_data, False, multi_line_on) for input_data in input_data[1:]]
-        #     message = '\n'.join(messages)
-        #
-        #self.output_text_edit.setPlainText(message)
+            if self.input_tabs.currentIndex() == 0:
+                input_data = self.input_text_edit.toPlainText() + '\n'
+            else:
+                input_data = self.test_suite_text_edit.toPlainText().split('\n')
+                input_length = self.test_suite_spinbox.value()
+                input_data = ['\n'.join(input_data[i:i+input_length]) for i in range(0, len(input_data), input_length)]
 
-    @staticmethod
-    def run_code(code, input_data, debug_on=False, multi_line_on=False):
-        real_path = os.path.realpath(__file__)
-        pyth_path = os.path.split(real_path)[0] + '/pyth/pyth.py'
-        flags = ['-', 'c']
-        if debug_on:
-            flags.append('d')
-        if multi_line_on:
-            flags.append('m')
-        pyth_process = subprocess.Popen(['/usr/bin/env', 'python3', pyth_path, ''.join(flags), code],
-                                        stdin=subprocess.PIPE,
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.STDOUT)
-
-        output, errors = pyth_process.communicate(input=bytearray(input_data, 'utf-8'))
-        message = output.decode() + (errors if errors else '')
-        return message
+            self.code_executor = CodeExecutor(code, input_data, debug_on, multi_line_on)
+            self.code_executor.begin.connect(self.code_execution_start)
+            self.code_executor.text_edit_write.connect(self.output_write)
+            self.code_executor.finished.connect(self.code_execution_end)
+            self.code_executor.start()
 
     @staticmethod
     def get_docs():
