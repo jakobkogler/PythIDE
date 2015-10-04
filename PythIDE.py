@@ -9,6 +9,7 @@ from urllib.parse import quote, unquote
 import re
 import os
 from execute_pyth import CodeExecutor
+import subprocess
 
 
 example_template = """\
@@ -203,25 +204,42 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.code_execution_running = False
 
     def run_program(self, debug_on):
-        if not self.code_execution_running:
-            self.code_execution_running = True
-            code_text_edit = self.code_tabs.currentWidget()
-            code = code_text_edit.toPlainText()
-            code = '\n'.join(code.split('\r\n'))
-            multi_line_on = self.action_multi_line.isChecked()
+        code_text_edit = self.code_tabs.currentWidget()
+        code = code_text_edit.toPlainText()
+        code = '\n'.join(code.split('\r\n'))
+        multi_line_on = self.action_multi_line.isChecked()
 
-            if self.input_tabs.currentIndex() == 0:
-                input_data = self.input_text_edit.toPlainText() + '\n'
-            else:
-                input_data = self.test_suite_text_edit.toPlainText().split('\n')
-                input_length = self.test_suite_spinbox.value()
-                input_data = ['\n'.join(input_data[i:i+input_length]) for i in range(0, len(input_data), input_length)]
+        if self.input_tabs.currentIndex() == 0:
+            input_data = self.input_text_edit.toPlainText() + '\n'
+            message = self.run_code(code, input_data, debug_on, multi_line_on)
+        else:
+            input_data = self.test_suite_text_edit.toPlainText().split('\n')
+            input_length = self.test_suite_spinbox.value()
+            input_data = ['\n'.join(input_data[i:i+input_length]) for i in range(0, len(input_data), input_length)]
 
-            self.code_executor = CodeExecutor(code, input_data, debug_on, multi_line_on)
-            self.code_executor.begin.connect(self.code_execution_start)
-            self.code_executor.text_edit_write.connect(self.output_write)
-            self.code_executor.finished.connect(self.code_execution_end)
-            self.code_executor.start()
+            messages = [self.run_code(code, input_data[0], debug_on, multi_line_on)] + \
+                [self.run_code(code, input_data, False, multi_line_on) for input_data in input_data[1:]]
+            message = '\n'.join(messages)
+
+        self.output_text_edit.setPlainText(message)
+
+    @staticmethod
+    def run_code(code, input_data, debug_on=False, multi_line_on=False):
+        real_path = os.path.realpath(__file__)
+        pyth_path = os.path.split(real_path)[0] + '/pyth/pyth.py'
+        flags = ['-', 'c']
+        if debug_on:
+            flags.append('d')
+        if multi_line_on:
+            flags.append('m')
+        pyth_process = subprocess.Popen(['python3', pyth_path, ''.join(flags), code],
+                                        stdin=subprocess.PIPE,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT)
+
+        output, errors = pyth_process.communicate(input=bytearray(input_data, 'utf-8'))
+        message = output.decode() + (errors if errors else '')
+        return message
 
     @staticmethod
     def get_docs():
