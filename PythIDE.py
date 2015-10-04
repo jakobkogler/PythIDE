@@ -3,9 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, \
     QTableWidgetItem, QMessageBox, QPlainTextEdit, QShortcut
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import pyqtSlot
-from mainwindow import Ui_MainWindow
-from clipboard_template import Ui_TemplateDialog
-import subprocess
+from PyQt5.uic import loadUi
 from urllib.parse import quote, unquote
 import re
 import os
@@ -29,10 +27,10 @@ Try it online: [Demonstration][1] or [Test Suite][2]
 """
 
 
-class IdeMainWindow(QMainWindow, Ui_MainWindow):
+class IdeMainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-        self.setupUi(self)
+        loadUi('mainwindow.ui', self)
 
         self.settings = QtCore.QSettings('ide_settings.ini', QtCore.QSettings.IniFormat)
         width = int(self.settings.value('WindowSettings/Width', '0'))
@@ -299,10 +297,10 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.code_tabs.setTabText(current_tab, 'Tab &{} ({} chars)'.format(current_tab + 1, code_length))
 
 
-class TemplateDialog(QDialog, Ui_TemplateDialog):
+class TemplateDialog(QDialog):
     def __init__(self, settings):
         QDialog.__init__(self)
-        self.setupUi(self)
+        loadUi('clipboard_template.ui', self)
         self.settings = settings
 
         template_text = self.settings.value('Template/Template', example_template)
