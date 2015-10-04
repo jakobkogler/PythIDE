@@ -19,8 +19,8 @@ cd PythIDE
 git submodule update --init 
 ```
 
-Then before the first start, you have to run the script `prebuild.sh`.
-It determines the version number via Git.
+Then before the first start, you have to run the script `prebuild.py`. 
+It compiles all `ui`-files into Python-files and it determines the version number via Git.
 Afterwards you can start the the program with
 
 ```
