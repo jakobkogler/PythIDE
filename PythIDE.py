@@ -195,7 +195,7 @@ class IdeMainWindow(QMainWindow, Ui_MainWindow):
         self.output_box.setTitle('Output (Running)')
 
     def output_write(self, text):
-        #self.output_text_edit
+        self.output_text_edit.moveCursor(QtGui.QTextCursor.End)
         self.output_text_edit.insertPlainText(text)
 
     def code_execution_end(self):
