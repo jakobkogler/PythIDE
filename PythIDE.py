@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, \
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.uic import loadUi
+from mainwindow import Ui_MainWindow
+from clipboard_template import Ui_TemplateDialog
 from urllib.parse import quote, unquote
 import re
 import os
@@ -27,10 +29,10 @@ Try it online: [Demonstration][1] or [Test Suite][2]
 """
 
 
-class IdeMainWindow(QMainWindow):
+class IdeMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-        loadUi('mainwindow.ui', self)
+        self.setupUi(self)
 
         self.settings = QtCore.QSettings('ide_settings.ini', QtCore.QSettings.IniFormat)
         width = int(self.settings.value('WindowSettings/Width', '0'))
@@ -194,6 +196,7 @@ class IdeMainWindow(QMainWindow):
         self.output_box.setTitle('Output (Running)')
 
     def output_write(self, text):
+        #self.output_text_edit
         self.output_text_edit.insertPlainText(text)
 
     def code_execution_end(self):
@@ -297,10 +300,10 @@ class IdeMainWindow(QMainWindow):
         self.code_tabs.setTabText(current_tab, 'Tab &{} ({} chars)'.format(current_tab + 1, code_length))
 
 
-class TemplateDialog(QDialog):
+class TemplateDialog(QDialog, Ui_TemplateDialog):
     def __init__(self, settings):
         QDialog.__init__(self)
-        loadUi('clipboard_template.ui', self)
+        self.setupUi(self)
         self.settings = settings
 
         template_text = self.settings.value('Template/Template', example_template)
