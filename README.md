@@ -15,6 +15,7 @@ First clone the project and fetch the submodule pyth:
 
 ```
 git clone https://github.com/jakobkogler/PythIDE.git
+cd PythIDE
 git submodule update --init 
 ```
 
