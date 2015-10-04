@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, \
     QTableWidgetItem, QMessageBox, QPlainTextEdit, QShortcut
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.uic import loadUi
 from mainwindow import Ui_MainWindow
 from clipboard_template import Ui_TemplateDialog
 from urllib.parse import quote, unquote
