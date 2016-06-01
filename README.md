@@ -31,6 +31,6 @@ Afterwards you can start the the program with
 python3 PythIDE.py
 ```
 
-## Licence ##
+## License ##
 
-Copyright (C) 2015 Jakob Kogler, [MIT License](https://github.com/jakobkogler/PythIDE/blob/master/LICENSE.txt)
+Copyright (C) 2016 Jakob Kogler, [MIT License](https://github.com/jakobkogler/PythIDE/blob/master/LICENSE.txt)
